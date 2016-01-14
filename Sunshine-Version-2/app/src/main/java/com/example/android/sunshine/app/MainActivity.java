@@ -3,15 +3,25 @@ package com.example.android.sunshine.app;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
-
+    private static final String TAG = "Main";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +66,49 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            String data[] = {
+                    "Mon 6/23 - Sunny - 31/17",
+                                        "Tue 6/24 - Foggy - 21/8",
+                                        "Wed 6/25 - Cloudy - 22/17",
+                                        "Thurs 6/26 - Rainy - 18/11",
+                                        "Fri 6/27 - Foggy - 21/10",
+                                        "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
+                                        "Sun 6/29 - Sunny - 20/7"
+            };
+
+            List<String> forecastEntry = new ArrayList<>(Arrays.asList(data));
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast,
+                    R.id.list_item_forecast_textview, forecastEntry);
+
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            ((ListView)rootView.findViewById(R.id.listview_forecast)).setAdapter(adapter);
+            try {
+                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
+                String value = url.getProtocol();
+                Log.v(TAG, "protocol:" + value);
+                value = url.getAuthority();
+                Log.v(TAG, "Authority:" + value);
+                value = url.getUserInfo();
+                Log.v(TAG, "UserInfo:" + value);
+                int port = url.getPort();
+                Log.v(TAG, "Port:" + port);
+                value = url.getFile();
+                Log.v(TAG, "File:" + value);
+                value = url.getPath();
+                Log.v(TAG, "Path:" + value);
+                value = url.getRef();
+                Log.v(TAG, "Ref:" + value);
+                value = url.getQuery();
+                Log.v(TAG, "Query:" + value);
+
+                url.openConnection();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return rootView;
         }
     }
